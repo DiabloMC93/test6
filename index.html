@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen de Enfermería Geriátrica - Parte 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .option-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid #334155;
+        }
+
+        .option-card:hover {
+            border-color: #6366f1;
+            background-color: #1e293b;
+        }
+
+        .option-card.correct {
+            border-color: #22c55e;
+            background-color: #064e3b;
+        }
+
+        .option-card.incorrect {
+            border-color: #ef4444;
+            background-color: #7f1d1d;
+        }
+
+        .progress-bar {
+            transition: width 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Header / Stats -->
+    <div class="max-w-3xl w-full mb-6 grid grid-cols-3 gap-4">
+        <div class="bg-slate-800 p-4 rounded-xl text-center border border-slate-700">
+            <p class="text-xs uppercase tracking-wider text-slate-400">Pregunta</p>
+            <p id="current-index" class="text-xl md:text-2xl font-bold">1 / 28</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl text-center border border-slate-700">
+            <p class="text-xs uppercase tracking-wider text-green-400">Acertadas</p>
+            <p id="correct-count" class="text-xl md:text-2xl font-bold text-green-500">0</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl text-center border border-slate-700">
+            <p class="text-xs uppercase tracking-wider text-red-400">Erróneas</p>
+            <p id="wrong-count" class="text-xl md:text-2xl font-bold text-red-500">0</p>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="max-w-3xl w-full bg-slate-800 h-2 rounded-full mb-8 overflow-hidden">
+        <div id="progress" class="progress-bar bg-indigo-500 h-full" style="width: 0%"></div>
+    </div>
+
+    <!-- Main Game Container -->
+    <main id="game-container" class="max-w-3xl w-full bg-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl border border-slate-700">
+        <div id="question-screen">
+            <h2 id="question-text" class="text-lg md:text-xl font-semibold mb-8 leading-relaxed">
+                Cargando pregunta...
+            </h2>
+            <div id="options-container" class="space-y-3">
+                <!-- Options injected here -->
+            </div>
+            <button id="next-btn" class="mt-8 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition hidden">
+                Siguiente Pregunta
+            </button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden text-center py-10">
+            <h2 class="text-3xl font-bold mb-4">¡Bloque Finalizado!</h2>
+            <div class="text-6xl mb-6">🏆</div>
+            <p id="final-stats" class="text-lg text-slate-300 mb-8"></p>
+            <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 rounded-xl transition">
+                Repetir este Bloque
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const questions = [
+            { id: 79, q: "Se acepta que a partir de los 30 años se mantiene la personalidad adulta en los hombres y mujeres.", options: ["excepto en presencia de situaciones catastróficas enfermedades o intervienes terapeutas importantes.", "la personalidad se modifica en la crisis de los 40", "problemas como ansiedad y depresión debidos al envejecimiento, originando un cambio de la personalidad", "todas son ciertas"], correct: 0 },
+            { id: 80, q: "Los cambios biológicos propios del proceso general del envejecimiento incluyen:", options: ["las modificaciones anatamofisiologicas del organismo", "las modificaciones en el comportamiento", "la destrucción de los tejidos", "el envejecimiento celular y la destrucción de los tejidos"], correct: 3 },
+            { id: 82, q: "¿Qué es la valoración geriátrica integral?", options: ["es un proceso diagnóstico, interdisciplinario y multidimensional para determinar capacidades y problemas clínicos, psicosociales", "es la valoración clínica, funcional, psíquica, afectiva y social del anciano.", "la A y la B son ciertas", "ninguna es cierta."], correct: 2 },
+            { id: 83, q: "Los objetivos de la valoración geriátrica son:", options: ["obtener un diagnóstico integral, instaurar un tratamiento basado en lo anterior y situar al anciano en el nivel sanitario o social adecuado. monitorizando y evaluando las actuaciones", "Cumplimentar en DIRAYA todos los datos del anciano para que otros profesionales puedan decidir mejor el tratamiento", "desarrollar un plan general de tratamiento y seguimiento a largo plazo que hace especial énfasis en el estado funcional y la calidad de vida del anciano.", "A y C son ciertas."], correct: 3 },
+            { id: 84, q: "¿Por qué son buenas las escalas de valoración?", options: ["nos permiten una valoración mas objetiva", "nos permite la transmisión objetiva y fiable de información. permitiéndonos cuantificar los datos y medir el progreso terapéutico", "son buenas siempre que tengan una gran fiabilidad y validez", "A, B y C son ciertas."], correct: 3 },
+            { id: 85, q: "Para realizar una valoración clínica se requiere la obtención de una historia clínica completa que consta:", options: ["entrevista, exploración, diagnostico, plan de cuidados, evolución y evaluación", "anamnesis, valoración de escalas, identificación de problemas de salud y conclusiones", "actualmente toda la información nos la suministra DIRAYA", "ninguna son cierta"], correct: 0 },
+            { id: 86, q: "¿Qué factores influyen en la valoración de enfermera?", options: ["las relacionadas con el anciano, características de su proceso de envejecimiento, personalidad, carácter", "las relacionadas con el contexto, situación, entorno físico y social", "las relacionadas con la enfermeria, conocimientos capacidades de interrelación, habilidades y filosofa de enfermeras.", "todas son ciertas"], correct: 3 },
+            { id: 87, q: "Consideramos técnicas para la recogida de información:", options: ["la observación", "la entrevista", "el examen físico, inspección, palpación, percusión, auscultación", "todas son ciertas"], correct: 3 },
+            { id: 88, q: "De la entrevista con el anciano debemos tener consideración:", options: ["el trato, la distancia, el lenguaje corporal, el tono y el volumen. también el ritmo de la conversación, el lenguaje, los temas, el tiempo, el tiempo de preguntas y las técnicas de comunicación.", "debemos ser cordiales y amables con los ancianos para ganarnos su confianza tras consultar los datos en su historia clínica", "la entrevista con el anciano debe ser breve y clara, no cansando al interlocutor", "todas son falsas"], correct: 0 },
+            { id: 89, q: "Cada vez que el anciano tiene un nuevo contacto con algunos de os engranajes del sistema sanitario en la mayoría de casos se realiza:", options: ["valoración de enfermeria generalizada", "valoración de enfermeria focalizada", "valoración de enfermeria de urgencias, emergencias, superficial o continuada", "no se realizan valoraciones"], correct: 2 },
+            { id: 90, q: "Según la OMS 1959 ¿cuál es la mejor medida de salud en el anciano?", options: ["la ausencia de enfermedades invalidantes", "la ausencia de 2 o mas enfermedades crónicas", "el disponer de un buen nivel socioeconómico", "su capacidad funcional"], correct: 3 },
+            { id: 91, q: "En la valoración funcional, debemos evitar valorar al paciente con enfermedades agudas y desmotivados.", options: ["hay que valorar al anciano en la circunstancia real en la que se encuentra", "es cierto, así como que deben ser valorados en su medio ambiente y utiliza la información de la entrevista", "la observación es otro principio básico al igual que la entrevista con familiares", "B y C son ciertas"], correct: 3 },
+            { id: 92, q: "Las funciones físicas se clasifican en:", options: ["AVD-B actividades de la vida diaria", "AVD-I actividades instrumentales de la vida diaria", "AVD-A actividades avanzadas de la vida diaria", "Todas son ciertas"], correct: 3 },
+            { id: 93, q: "En las escalas de valoración funcional:", options: ["valorar mediante una escala significa cuantificar o dar un numero a nuestras observaciones", "tenemos que tener en cuenta que son instrumentos de medida y no juicios clínicos", "la elección de una escala depende de la finalidad de la mejora y debe ser validad científicamente.", "todas son correctas"], correct: 3 },
+            { id: 94, q: "El equipo mínimo del equipo multidisciplinario de asistencia al anciano consta de:", options: ["medico y enfermera de familia y trabajador social", "medico y enfermera de familia", "enfermera de familia", "geriatra, enfermera y trabajador social"], correct: 0 },
+            { id: 95, q: "La valoración social, la coordinación y provisión de medios que permiten al anciano permanecer en su domicilio es función de:", options: ["el medico y el enfermero", "los servicios sociales de la diputación", "el trabajador social", "el ayuntamiento"], correct: 2 },
+            { id: 96, q: "Las unidades de Geriatría de agudos, rehabilitación, consulta externa, hospital de día, etc., son:", options: ["unidades que existen en las áreas sanitarias", "unidades que existen en los hospitales", "niveles asistenciales del servicio hospitalario de Geriatría", "unidades pendientes de ser legislaras por el gobierno central."], correct: 2 },
+            { id: 97, q: "Las unidades geriátricas de agudos:", options: ["deben estar en los centros de salud", "deben estar en el hospital de día geriátrico", "deben estar en hospitales generales que dispongan de medios", "deben estar en centros especializados de alta resolución"], correct: 2 },
+            { id: 98, q: "La función principal de la consulta externa de geriatría es:", options: ["aislar al anciano dentro del sistema sanitario", "realizar una valoración geriátrica integral a pacientes complejos", "atender a pacientes que no pueden seguir rehabilitación ambulatoria", "todas son ciertas"], correct: 1 },
+            { id: 99, q: "Rehabilitación, mantenimiento, controles médicos y cuidados de enfermería son funciones principales en:", options: ["atención primaria", "asistencia geriátrica a domicilio", "unidades geriátricas de agudos", "hospital de día geriátrico"], correct: 3 },
+            { id: 100, q: "El equipo formado por geriatra, enfermería y trabajador social en el hospital es:", options: ["equipo de valoración y cuidados geriátricos", "equipo encargado de evaluar la ley de dependencia", "unidad funcional interdisciplinaria que valora, deriva y gestiona el alta", "A y C son ciertas"], correct: 3 },
+            { id: 101, q: "Entendemos la enfermería gerontológica como:", options: ["servicio que incorpora conocimientos especializados sobre el envejecimiento", "deben aumentar conductas saludables y minimizar pérdidas", "proveer comodidad durante procesos de agudeza o muerte", "todas son ciertas"], correct: 3 },
+            { id: 102, q: "Los cuidados en el campo gerontológico deben ser:", options: ["fáciles de administrar y contando con recursos propios", "preventivos, integrales, progresivos y continuos", "las dos son falsas", "las dos son verdaderas"], correct: 1 },
+            { id: 103, q: "El modelo de V. Henderson tiene como principios de los cuidados:", options: ["conseguir el máximo nivel de autocuidados", "ayudar a alcanzar el mayor grado de independencia", "el proceso educativo para una vida creativa", "ninguna son ciertas"], correct: 1 },
+            { id: 104, q: "Las áreas de cuidados de enfermería a las personas mayores son:", options: ["promoción, mantenimiento, rehabilitación, cuidados graves/terminales y educación/política", "estudio científico, espiritual, cognitivo y conductual", "asistencia sanitaria, social y recreativa", "todas son falsas"], correct: 0 },
+            { id: 105, q: "El papel del profesional de enfermera en el equipo multidisciplinar (EMD) es:", options: ["facilitador de cuidados", "defensor del paciente y consejero", "promoción cuidados primarios", "todas son ciertas"], correct: 3 },
+            { id: 106, q: "Podemos definir al anciano sano como:", options: ["sujeto con alteraciones funcionales al límite, en equilibrio inestable", "toda persona mayor con ausencia de enfermedad", "A y B son verdaderas", "A y B son falsas"], correct: 1 },
+            { id: 107, q: "Los cambios inherentes al proceso de envejecimiento del ser humano engloban:", options: ["Los cambios biológicos, psíquicos y sociales", "los cambios y evolución de las enfermedades crónicas", "los estados de actividad- jubilación", "los cambios contractuales legalmente exigibles"], correct: 0 }
+        ];
+
+        let currentQuestion = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let answered = false;
+
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextBtn = document.getElementById('next-btn');
+        const currentIndexLabel = document.getElementById('current-index');
+        const correctCountLabel = document.getElementById('correct-count');
+        const wrongCountLabel = document.getElementById('wrong-count');
+        const progressBar = document.getElementById('progress');
+        const questionScreen = document.getElementById('question-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const finalStats = document.getElementById('final-stats');
+
+        function loadQuestion() {
+            answered = false;
+            nextBtn.classList.add('hidden');
+            const qData = questions[currentQuestion];
+            
+            questionText.innerText = `${qData.id}. ${qData.q}`;
+            currentIndexLabel.innerText = `${currentQuestion + 1} / ${questions.length}`;
+            progressBar.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+            
+            optionsContainer.innerHTML = '';
+            qData.options.forEach((opt, index) => {
+                const button = document.createElement('div');
+                button.className = 'option-card p-4 rounded-xl flex items-center gap-4 bg-slate-800/50';
+                button.innerHTML = `
+                    <span class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        ${String.fromCharCode(65 + index)}
+                    </span>
+                    <span class="text-md">${opt}</span>
+                `;
+                button.onclick = () => selectOption(index, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectOption(index, element) {
+            if (answered) return;
+            answered = true;
+            
+            const correctIndex = questions[currentQuestion].correct;
+            const options = optionsContainer.children;
+
+            if (index === correctIndex) {
+                element.classList.add('correct');
+                correctAnswers++;
+                correctCountLabel.innerText = correctAnswers;
+            } else {
+                element.classList.add('incorrect');
+                options[correctIndex].classList.add('correct');
+                wrongAnswers++;
+                wrongCountLabel.innerText = wrongAnswers;
+            }
+
+            nextBtn.classList.remove('hidden');
+        }
+
+        nextBtn.onclick = () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                progressBar.style.width = "100%";
+                showResults();
+            }
+        };
+
+        function showResults() {
+            questionScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            const score = Math.round((correctAnswers / questions.length) * 100);
+            finalStats.innerHTML = `
+                Resultados del bloque (79-107):<br><br>
+                Acertadas: <span class="text-green-500 font-bold">${correctAnswers}</span><br>
+                Erróneas: <span class="text-red-500 font-bold">${wrongAnswers}</span><br><br>
+                Efectividad: <span class="text-indigo-400 font-bold text-2xl">${score}%</span>
+            `;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
