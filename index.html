@@ -20,19 +20,19 @@
             border: 2px solid #334155;
         }
 
-        .option-card:hover {
+        .option-card:hover:not(.disabled) {
             border-color: #6366f1;
             background-color: #1e293b;
         }
 
         .option-card.correct {
-            border-color: #22c55e;
-            background-color: #064e3b;
+            border-color: #22c55e !important;
+            background-color: #064e3b !important;
         }
 
         .option-card.incorrect {
-            border-color: #ef4444;
-            background-color: #7f1d1d;
+            border-color: #ef4444 !important;
+            background-color: #7f1d1d !important;
         }
 
         .progress-bar {
@@ -46,7 +46,7 @@
     <div class="max-w-3xl w-full mb-6 grid grid-cols-3 gap-4">
         <div class="bg-slate-800 p-4 rounded-xl text-center border border-slate-700">
             <p class="text-xs uppercase tracking-wider text-slate-400">Pregunta</p>
-            <p id="current-index" class="text-xl md:text-2xl font-bold">1 / 28</p>
+            <p id="current-index" class="text-xl md:text-2xl font-bold">0 / 0</p>
         </div>
         <div class="bg-slate-800 p-4 rounded-xl text-center border border-slate-700">
             <p class="text-xs uppercase tracking-wider text-green-400">Acertadas</p>
@@ -81,7 +81,7 @@
         <div id="result-screen" class="hidden text-center py-10">
             <h2 class="text-3xl font-bold mb-4">¡Bloque Finalizado!</h2>
             <div class="text-6xl mb-6">🏆</div>
-            <p id="final-stats" class="text-lg text-slate-300 mb-8"></p>
+            <div id="final-stats" class="text-lg text-slate-300 mb-8 space-y-2"></div>
             <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 rounded-xl transition">
                 Repetir este Bloque
             </button>
@@ -91,9 +91,7 @@
     <script>
         const questions = [
             { id: 79, q: "Se acepta que a partir de los 30 años se mantiene la personalidad adulta en los hombres y mujeres.", options: ["excepto en presencia de situaciones catastróficas enfermedades o intervienes terapeutas importantes.", "la personalidad se modifica en la crisis de los 40", "problemas como ansiedad y depresión debidos al envejecimiento, originando un cambio de la personalidad", "todas son ciertas"], correct: 0 },
-            { id: 80, q: "Los cambios biológicos propios del proceso general del envejecimiento incluyen:", options:
-                ["las modificaciones anatamofisiologicas del organismo", "las modificaciones en el comportamiento", "la destrucción de los tejidos", 
-                 "el envejecimiento celular y la destrucción de los tejidos"], correct: 0 },
+            { id: 80, q: "Los cambios biológicos propios del proceso general del envejecimiento incluyen:", options: ["las modificaciones anatamofisiologicas del organismo", "las modificaciones en el comportamiento", "la destrucción de los tejidos", "el envejecimiento celular y la destrucción de los tejidos"], correct: 0 },
             { id: 82, q: "¿Qué es la valoración geriátrica integral?", options: ["es un proceso diagnóstico, interdisciplinario y multidimensional para determinar capacidades y problemas clínicos, psicosociales", "es la valoración clínica, funcional, psíquica, afectiva y social del anciano.", "la A y la B son ciertas", "ninguna es cierta."], correct: 2 },
             { id: 83, q: "Los objetivos de la valoración geriátrica son:", options: ["obtener un diagnóstico integral, instaurar un tratamiento basado en lo anterior y situar al anciano en el nivel sanitario o social adecuado. monitorizando y evaluando las actuaciones", "Cumplimentar en DIRAYA todos los datos del anciano para que otros profesionales puedan decidir mejor el tratamiento", "desarrollar un plan general de tratamiento y seguimiento a largo plazo que hace especial énfasis en el estado funcional y la calidad de vida del anciano.", "A y C son ciertas."], correct: 3 },
             { id: 84, q: "¿Por qué son buenas las escalas de valoración?", options: ["nos permiten una valoración mas objetiva", "nos permite la transmisión objetiva y fiable de información. permitiéndonos cuantificar los datos y medir el progreso terapéutico", "son buenas siempre que tengan una gran fiabilidad y validez", "A, B y C son ciertas."], correct: 3 },
@@ -101,9 +99,7 @@
             { id: 86, q: "¿Qué factores influyen en la valoración de enfermera?", options: ["las relacionadas con el anciano, características de su proceso de envejecimiento, personalidad, carácter", "las relacionadas con el contexto, situación, entorno físico y social", "las relacionadas con la enfermeria, conocimientos capacidades de interrelación, habilidades y filosofa de enfermeras.", "todas son ciertas"], correct: 3 },
             { id: 87, q: "Consideramos técnicas para la recogida de información:", options: ["la observación", "la entrevista", "el examen físico, inspección, palpación, percusión, auscultación", "todas son ciertas"], correct: 3 },
             { id: 88, q: "De la entrevista con el anciano debemos tener consideración:", options: ["el trato, la distancia, el lenguaje corporal, el tono y el volumen. también el ritmo de la conversación, el lenguaje, los temas, el tiempo, el tiempo de preguntas y las técnicas de comunicación.", "debemos ser cordiales y amables con los ancianos para ganarnos su confianza tras consultar los datos en su historia clínica", "la entrevista con el anciano debe ser breve y clara, no cansando al interlocutor", "todas son falsas"], correct: 0 },
-            { id: 89, q: "Cada vez que el anciano tiene un nuevo contacto con algunos de os engranajes del sistema sanitario en la mayoría de casos se realiza:", 
-             options: ["valoración de enfermeria generalizada", "valoración de enfermeria focalizada", "valoración de enfermeria de urgencias, 
-                       emergencias, superficial o continuada", "no se realizan valoraciones"], correct: 1 },
+            { id: 89, q: "Cada vez que el anciano tiene un nuevo contacto con algunos de os engranajes del sistema sanitario en la mayoría de casos se realiza:", options: ["valoración de enfermeria generalizada", "valoración de enfermeria focalizada", "valoración de enfermeria de urgencias, emergencias, superficial o continuada", "no se realizan valoraciones"], correct: 1 },
             { id: 90, q: "Según la OMS 1959 ¿cuál es la mejor medida de salud en el anciano?", options: ["la ausencia de enfermedades invalidantes", "la ausencia de 2 o mas enfermedades crónicas", "el disponer de un buen nivel socioeconómico", "su capacidad funcional"], correct: 3 },
             { id: 91, q: "En la valoración funcional, debemos evitar valorar al paciente con enfermedades agudas y desmotivados.", options: ["hay que valorar al anciano en la circunstancia real en la que se encuentra", "es cierto, así como que deben ser valorados en su medio ambiente y utiliza la información de la entrevista", "la observación es otro principio básico al igual que la entrevista con familiares", "B y C son ciertas"], correct: 3 },
             { id: 92, q: "Las funciones físicas se clasifican en:", options: ["AVD-B actividades de la vida diaria", "AVD-I actividades instrumentales de la vida diaria", "AVD-A actividades avanzadas de la vida diaria", "Todas son ciertas"], correct: 3 },
@@ -120,8 +116,7 @@
             { id: 103, q: "El modelo de V. Henderson tiene como principios de los cuidados:", options: ["conseguir el máximo nivel de autocuidados", "ayudar a alcanzar el mayor grado de independencia", "el proceso educativo para una vida creativa", "ninguna son ciertas"], correct: 1 },
             { id: 104, q: "Las áreas de cuidados de enfermería a las personas mayores son:", options: ["promoción, mantenimiento, rehabilitación, cuidados graves/terminales y educación/política", "estudio científico, espiritual, cognitivo y conductual", "asistencia sanitaria, social y recreativa", "todas son falsas"], correct: 0 },
             { id: 105, q: "El papel del profesional de enfermera en el equipo multidisciplinar (EMD) es:", options: ["facilitador de cuidados", "defensor del paciente y consejero", "promoción cuidados primarios", "todas son ciertas"], correct: 3 },
-            { id: 106, q: "Podemos definir al anciano sano como:", options:
-                ["sujeto con alteraciones funcionales al límite, en equilibrio inestable", "toda persona mayor con ausencia de enfermedad", "A y B son verdaderas", "A y B son falsas"], correct: 0 },
+            { id: 106, q: "Podemos definir al anciano sano como:", options: ["sujeto con alteraciones funcionales al límite, en equilibrio inestable", "toda persona mayor con ausencia de enfermedad", "A y B son verdaderas", "A y B son falsas"], correct: 0 },
             { id: 107, q: "Los cambios inherentes al proceso de envejecimiento del ser humano engloban:", options: ["Los cambios biológicos, psíquicos y sociales", "los cambios y evolución de las enfermedades crónicas", "los estados de actividad- jubilación", "los cambios contractuales legalmente exigibles"], correct: 0 }
         ];
 
@@ -172,6 +167,9 @@
             const correctIndex = questions[currentQuestion].correct;
             const options = optionsContainer.children;
 
+            // Mark all as disabled for styles
+            Array.from(options).forEach(opt => opt.classList.add('disabled', 'cursor-default'));
+
             if (index === correctIndex) {
                 element.classList.add('correct');
                 correctAnswers++;
@@ -201,14 +199,24 @@
             resultScreen.classList.remove('hidden');
             const score = Math.round((correctAnswers / questions.length) * 100);
             finalStats.innerHTML = `
-                Resultados del bloque (79-107):<br><br>
-                Acertadas: <span class="text-green-500 font-bold">${correctAnswers}</span><br>
-                Erróneas: <span class="text-red-500 font-bold">${wrongAnswers}</span><br><br>
-                Efectividad: <span class="text-indigo-400 font-bold text-2xl">${score}%</span>
+                <p>Resultados del bloque (79-107):</p>
+                <div class="flex justify-center gap-8 my-4">
+                    <div>
+                        <p class="text-sm text-slate-400">Acertadas</p>
+                        <p class="text-2xl font-bold text-green-500">${correctAnswers}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-400">Erróneas</p>
+                        <p class="text-2xl font-bold text-red-500">${wrongAnswers}</p>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-400">Puntuación Final</p>
+                <p class="text-indigo-400 font-bold text-4xl">${score}%</p>
             `;
         }
 
-        loadQuestion();
+        // Iniciar el examen
+        window.onload = loadQuestion;
     </script>
 </body>
 </html>
